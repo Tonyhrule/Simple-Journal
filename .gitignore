@@ -1,0 +1,18 @@
+# Byte-compiled / optimized / DLL files
+*.class
+
+# Logs
+*.log
+
+# Database files
+*.db
+
+# VS Code settings
+.vscode/
+
+# Compiled libraries
+lib/*.jar
+
+# OS generated files
+.DS_Store
+Thumbs.db

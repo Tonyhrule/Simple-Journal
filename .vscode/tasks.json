@@ -1,0 +1,50 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "javac",
+            "args": [
+                "-d",
+                "bin",
+                "-cp",
+                "lib\\sqlite-jdbc-3.45.3.0.jar;lib\\slf4j-api-1.7.32.jar;lib\\slf4j-simple-1.7.32.jar",
+                "src\\Database.java",
+                "src\\JournalApp.java",
+                "src\\JournalDAO.java",
+                "src\\JournalEntry.java"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": {
+                "owner": "java",
+                "fileLocation": ["relative", "${workspaceFolder}"],
+                "pattern": {
+                    "regexp": "^(\\S.*):(\\d+):\\s*(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "message": 3
+                }
+            },
+            "detail": "Generated task by Java extension."
+        },
+        {
+            "label": "run",
+            "type": "shell",
+            "command": "java",
+            "args": [
+                "-cp",
+                "bin;lib\\sqlite-jdbc-3.45.3.0.jar;lib\\slf4j-api-1.7.32.jar;lib\\slf4j-simple-1.7.32.jar",
+                "JournalApp"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
