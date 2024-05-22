@@ -57,3 +57,6 @@ java -cp "bin;lib/sqlite-jdbc-<verison>.jar;lib/slf4j-api-<verison>.jar;lib/slf4
 - **Home Page:** The home page welcomes you to Simple Journal and provides a brief description. Click the "Emanate" button to start using the journal.
 - **Journal Page:** Create new journal entries, edit existing ones, delete entries, and search through your journal entries.
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
