@@ -4,7 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import dao.JournalDAO;
@@ -12,6 +15,8 @@ import model.JournalEntry;
 import util.Database;
 
 public class JournalApp {
+    private static final Logger logger = Logger.getLogger(JournalApp.class.getName());
+
     private JFrame frame;
     private JTextField titleField;
     private JTextArea entryArea;
@@ -24,7 +29,12 @@ public class JournalApp {
 
     public JournalApp(String mode) {
         journalDAO = new JournalDAO();
-        entries = journalDAO.getAllEntries();
+        try {
+            entries = journalDAO.getAllEntries();
+        } catch (SQLException e) {
+            showErrorDialog("Error retrieving journal entries: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error retrieving journal entries", e);
+        }
 
         frame = new JFrame("Journal App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -100,11 +110,19 @@ public class JournalApp {
                 String content = entryArea.getText();
                 if (!title.isEmpty() && !content.isEmpty()) {
                     JournalEntry entry = new JournalEntry(title, content);
-                    journalDAO.insertEntry(entry);
-                    entries = journalDAO.getAllEntries();
-                    updateEntryList(entries);
-                    titleField.setText("");
-                    entryArea.setText("");
+                    try {
+                        journalDAO.insertEntry(entry);
+                        entries = journalDAO.getAllEntries();
+                        updateEntryList(entries);
+                        titleField.setText("");
+                        entryArea.setText("");
+                    } catch (SQLException ex) {
+                        showErrorDialog("Error saving journal entry: " + ex.getMessage());
+                        logger.log(Level.SEVERE, "Error saving journal entry", ex);
+                    } catch (Exception ex) {
+                        showErrorDialog("Unexpected error: " + ex.getMessage());
+                        logger.log(Level.SEVERE, "Unexpected error", ex);
+                    }
                 }
             }
         });
@@ -117,11 +135,19 @@ public class JournalApp {
                     JournalEntry entry = entries.get(selectedIndex);
                     entry.setTitle(titleField.getText());
                     entry.setContent(entryArea.getText());
-                    journalDAO.updateEntry(entry);
-                    entries = journalDAO.getAllEntries();
-                    updateEntryList(entries);
-                    titleField.setText("");
-                    entryArea.setText("");
+                    try {
+                        journalDAO.updateEntry(entry);
+                        entries = journalDAO.getAllEntries();
+                        updateEntryList(entries);
+                        titleField.setText("");
+                        entryArea.setText("");
+                    } catch (SQLException ex) {
+                        showErrorDialog("Error updating journal entry: " + ex.getMessage());
+                        logger.log(Level.SEVERE, "Error updating journal entry", ex);
+                    } catch (Exception ex) {
+                        showErrorDialog("Unexpected error: " + ex.getMessage());
+                        logger.log(Level.SEVERE, "Unexpected error", ex);
+                    }
                 }
             }
         });
@@ -132,11 +158,19 @@ public class JournalApp {
                 int selectedIndex = entryList.getSelectedIndex();
                 if (selectedIndex != -1) {
                     JournalEntry entry = entries.get(selectedIndex);
-                    journalDAO.deleteEntry(entry.getId());
-                    entries = journalDAO.getAllEntries();
-                    updateEntryList(entries);
-                    titleField.setText("");
-                    entryArea.setText("");
+                    try {
+                        journalDAO.deleteEntry(entry.getId());
+                        entries = journalDAO.getAllEntries();
+                        updateEntryList(entries);
+                        titleField.setText("");
+                        entryArea.setText("");
+                    } catch (SQLException ex) {
+                        showErrorDialog("Error deleting journal entry: " + ex.getMessage());
+                        logger.log(Level.SEVERE, "Error deleting journal entry", ex);
+                    } catch (Exception ex) {
+                        showErrorDialog("Unexpected error: " + ex.getMessage());
+                        logger.log(Level.SEVERE, "Unexpected error", ex);
+                    }
                 }
             }
         });
@@ -203,6 +237,10 @@ public class JournalApp {
         for (JournalEntry entry : entries) {
             listModel.addElement(entry.toString());
         }
+    }
+
+    private void showErrorDialog(String message) {
+        JOptionPane.showMessageDialog(frame, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void main(String[] args) {

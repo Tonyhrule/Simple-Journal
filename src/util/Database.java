@@ -3,24 +3,20 @@ package util;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class Database {
     private static final String DB_URL = "jdbc:sqlite:journal.db";
 
-    public static Connection connect() {
-        Connection conn = null;
+    public static Connection connect() throws SQLException {
         try {
             // Load the SQLite JDBC driver
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection(DB_URL);
+            return DriverManager.getConnection(DB_URL);
         } catch (ClassNotFoundException e) {
-            System.out.println("SQLite JDBC driver not found");
-            e.printStackTrace();
+            throw new SQLException("SQLite JDBC driver not found", e);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new SQLException("Failed to connect to the database", e);
         }
-        return conn;
     }
 
     public static void createNewTable() {
@@ -32,10 +28,10 @@ public class Database {
                 + ");";
 
         try (Connection conn = connect();
-                Statement stmt = conn.createStatement()) {
+                java.sql.Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error creating table: " + e.getMessage());
         }
     }
 }
